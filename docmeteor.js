@@ -45,6 +45,8 @@ var gitignoreFound = fs.existsSync('.gitignore');
 var docFolderFound = fs.existsSync('docs/index.html');
 var includeReadme = fs.existsSync('README.md') && !program.exclude;
 
+var templateName = ''; // TODO: Make a pretty themed output?
+
 var sourceFiles = ['.'];
 if (includeReadme) {
   sourceFiles.push('README.md');
@@ -130,9 +132,19 @@ initModule = function(done) {
 
 runJsDoc = function(done) {
   var exec = require('child_process').exec;
-  exec('jsdoc ' + getSourceFiles() + ' -d docs', function(err, stin) {
+  // <path/to/jsdoc>/jsoc mysourcefiles/* -t <path.to.unzipped>/template -c <path.to.unzipped>/conf.json -d <path.to.output>/
+  var templateString = '';
+
+  if (templateName.length > 0) {
+    var tempPath = path.join(templatePath, templateName, 'template');
+    var configPath = path.join(templatePath, templateName, 'conf.json');
+    templateString = ' -t ' + tempPath + ' -c ' + configPath;
+  }
+
+  exec('jsdoc ' + getSourceFiles() + ' -d docs' + templateString, function(err, stin) {
     if (err) {
-      console.log('Could not run jsdoc make sure its intalled "$ npm install jsdoc -g"');
+      console.log('Error while running jsdoc:');
+      console.log(err);
       process.exit();
     } else {
       if (stin.length > 0) {
@@ -140,6 +152,32 @@ runJsDoc = function(done) {
         process.exit();
       } else {
         done();
+      }
+    }
+  });
+};
+
+runJsDocJSON = function(filename, done) {
+  var exec = require('child_process').exec;
+
+  exec('jsdoc ' + getSourceFiles() + ' -t templates/haruki -d console -q format=json', function(err, stin) {
+    if (err) {
+      console.log('Error while running jsdoc to json:');
+      console.log(err);
+      process.exit();
+    } else {
+      if (stin.length == 0) {
+        console.log('Error while running jsdoc to json');
+        process.exit();
+      } else {
+        try {
+          var apiObject = JSON.parse(stin); 
+          fs.writeFileSync(filename, stin, 'utf8');
+          done();
+        } catch(err) {
+          console.log(stin);
+          process.exit();
+        }
       }
     }
   });
@@ -174,12 +212,16 @@ getBranch(function(branch, ghBranchExists) {
 
     if (docsModuleInstalled && docFolderFound) {
       console.log('Running jsdoc on branch "' + branch + '"' + ( (includeReadme)?' includes README.md':'' ));
-      runJsDoc(function() {
-        console.log('publishing documentation');
-        commitDocs(function() {
-          console.log('done!');
-          process.exit();
+      runJsDocJSON('api.json', function() {
+
+        runJsDoc(function() {
+          console.log('publishing documentation');
+          commitDocs(function() {
+            console.log('done!');
+            process.exit();
+          });
         });
+        
       });
     }
   }
