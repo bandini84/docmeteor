@@ -23,6 +23,7 @@ $ docmeteor --help
     -c, --create             Add gh-pages as submodule folder "docs"
     -u, --update             Init/update submodule folder "docs"
     -m, --message <message>  Commit message, defaults to "auto updated documentation"
+    -e, --exclude            Dont include "README.md", default includes "README.md" if found
 ```
 
 Update documentation:
