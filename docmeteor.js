@@ -26,7 +26,7 @@ var scriptPath = path.dirname(require.main.filename);
 var templatePath = path.join(scriptPath, path.sep, 'templates');
 
 program
-  .version('0.0.1')
+  .version('0.0.2')
   .option('-c, --create', 'Add gh-pages as submodule folder "docs"')
   .option('-u, --update', 'Init/update submodule folder "docs"')
   .option('-m, --message <message>', 'Commit message, defaults to "auto updated documentation"')
