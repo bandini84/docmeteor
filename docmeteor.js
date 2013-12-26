@@ -185,7 +185,7 @@ runJsDocJSON = function(filename, done) {
 
 commitDocs = function(done) {
   var exec = require('child_process').exec;
-  exec('cd docs; git add -A; git commit -am \'' + commitMessage + '\'; git push', function(err, stin) {
+  exec('cd docs; git add -A; git commit -am \'' + commitMessage + '\'; git push; cd ..; git submodule update', function(err, stin) {
     if (err) {
       console.log('Could not commit and push api documentation');
       process.exit();
