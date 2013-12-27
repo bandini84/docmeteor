@@ -26,7 +26,7 @@ var scriptPath = path.dirname(require.main.filename);
 var templatePath = path.join(scriptPath, path.sep, 'templates');
 
 program
-  .version('0.0.2')
+  .version('0.0.3')
   .option('-c, --create', 'Add gh-pages as submodule folder "docs"')
   .option('-u, --update', 'Init/update submodule folder "docs"')
   .option('-m, --message <message>', 'Commit message, defaults to "auto updated documentation"')
@@ -185,9 +185,10 @@ runJsDocJSON = function(filename, done) {
 
 commitDocs = function(done) {
   var exec = require('child_process').exec;
-  exec('cd docs; git add -A; git commit -am \'' + commitMessage + '\'; git push; cd ..; git submodule update', function(err, stin) {
+  exec('cd docs; git add -A; git commit -am \'' + commitMessage + '\'; git push', function(err, stin) { //  ; cd ..; git submodule update
     if (err) {
       console.log('Could not commit and push api documentation');
+      console.log(err);
       process.exit();
     } else {
       done();
