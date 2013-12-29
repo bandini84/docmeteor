@@ -1,4 +1,4 @@
-var commands = {
+module.exports = {
   '@constructor': ['comment'],
   '@author': ['name'],
   '@deprecated': ['comment'],
@@ -20,29 +20,4 @@ var commands = {
   '@reactive': ['comment'],
   '@where': ['where', 'comment'],
   '@copyright': ['copyrightText'],
-
 };
-
-  var currentCommand = '';
-  var currentCommandParams = [];
-
-  var addParamToCommand = function(word) {
-    if (currentCommand) {
-      if (commands[currentCommand].length == currentCommandParams.length) {
-        var comment = currentCommandParams.pop();
-        currentCommandParams.push(comment + ' ' + word);
-      } else {
-        currentCommandParams.push(word);
-      }
-    }
-  };
-
-  var addCommandToDocumentTree = function() {
-    var result = {};
-    result[currentCommand] = {};
-    for (var i = 0; i < currentCommandParams.length; i++) {
-      var key = commands[currentCommand][i];
-      result[currentCommand][key] = currentCommandParams[i];
-    }
-    documentTree.push(result);
-  };

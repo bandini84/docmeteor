@@ -9,7 +9,7 @@ var scriptPath = path.dirname(require.main.filename);
 
 var packageFolder = fs.existsSync('package.js');
 
-var documentFile = require('./parse-documentation.js');
+var parseFile = require('./parse-documentation.js');
 
 var packageJS = {};
 
@@ -87,7 +87,7 @@ if (packageFolder) {
     for (var filename in packageObject.files) {
       var where = packageObject.files[filename];
       if (packageObject.files.hasOwnProperty(filename)) {
-        documentElements.push(documentFile.parse(filename, where));
+        documentElements.push(parseFile(filename, where));
       }
     }
     console.log('DOCUMENT ELEMENTS:___________');

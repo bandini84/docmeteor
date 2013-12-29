@@ -1,17 +1,9 @@
 // Filesystem
 var fs = require('fs');
-// Path
-var path = require('path');
-// Get current path
-var currentPath = path.resolve();
-// Path of this script - Used by creating app from templates
-var scriptPath = path.dirname(require.main.filename);
+// Annotations object
+var commands = require('./annotations.js');
 
-// TODO: Make a true nested tree of the source code...
-// TODO: Add filename and where
-// [{filename: '', where: '', data: []}, { .. }];
-
-var parseCode = function(code, filename, where) {
+var parseSource = function(code, filename, where) {
   var inComment = false;
   var inInlineComment = false;
   var inTextSingle = false;
@@ -22,11 +14,15 @@ var parseCode = function(code, filename, where) {
   var inCommentHandlebar = 0;
   var inCommentParantes = 0;
   var lastWhitespace = false;
+  var currentWord = '';
   var i = 0;
   var currentObject; // { type: '', text: ''}
   var currentIsToken = false;
   var elements = [];
 
+  var currentCommand = '';
+  var currentCommandParams = [];
+  var currentAnnotations = {};
 
 
   var isNext = function(text) {
@@ -40,9 +36,6 @@ var parseCode = function(code, filename, where) {
         }
       }
     }
-    // if (isMatch) {
-    //   i += text.length-1;
-    // }
     return isMatch;
   };
 
@@ -73,7 +66,7 @@ var parseCode = function(code, filename, where) {
     var doLimitWhiteSpace = (limitWhiteSpace && chIsWhiteSpace && lastIsWhiteSpace);
     var firstIsWhiteSpace = (chIsWhiteSpace && !text.length);
 
-    if (ch == '\n') {
+    if (c == '\n') {
       lineCount++;
       if (line) {
         currentLineNr++;
@@ -102,6 +95,10 @@ var parseCode = function(code, filename, where) {
 
         // We add the property data to the node        
         currentObject[type][currentLineNr][property] = text;
+        // We set the current command if set
+        if (currentCommand && !currentObject[type][currentLineNr].annotations) {
+          currentObject[type][currentLineNr].annotations = currentAnnotations;
+        }
 
       }
 
@@ -113,6 +110,9 @@ var parseCode = function(code, filename, where) {
     if (!currentIsToken) {
       
       var c = pChar || code[i];
+
+      // Rigs annotations
+      addCharToWord(c);
 
       // Normal comment
       if (inComment && !inInlineComment) {
@@ -140,9 +140,43 @@ var parseCode = function(code, filename, where) {
 
   };
 
+  var addCharToWord = function(c) {
+    // We are on the last item
+    var lastItem = (commands[currentCommand] && currentCommandParams.length == commands[currentCommand].length);
+    // If new word in comment block
+    if ((!c || isWhiteSpace(c)) && inComment && !inInlineComment && !inCommentParantes && !inCommentBracket && !inCommentHandlebar) {
+      if (!currentCommand && commands[currentWord]) {
+        currentCommand = currentWord;
+      } else {
+        // If we are in command mode
+        if (currentCommand) {
+          if (lastItem) {
+            currentWord = currentCommandParams.pop() + ' ' + currentWord;
+          }
+          currentCommandParams.push(currentWord);
+        }
+      }
+      // Start a new word
+      currentWord = '';
+    } else {
+      // Add the char to the current word
+      currentWord += c;
+    }
+
+    // We set the real object
+    if (!c && commands[currentCommand]) {
+      var result = {};
+      var name = 'unknown';
+      for (var index = 0; index < currentCommandParams.length; index++) {
+        name = commands[currentCommand][index] || 'unknown';
+        result[name] = currentCommandParams[index];
+      }
+      currentAnnotations[currentCommand] = result;
+    }
+  };
+
 
   while (i < code.length) {
-    var ch = code[i];
     currentIsToken = false;
 
     if (isNext('\\')) {
@@ -152,6 +186,11 @@ var parseCode = function(code, filename, where) {
 
     if (isNext('\n')) { // Is newline
       inInlineComment = false;
+      // Reset command
+      addCharToWord();
+      currentCommand = '';
+      currentCommandParams = [];
+      currentAnnotations = {};    
     } else {
 
       if (inComment || inInlineComment) {
@@ -188,18 +227,18 @@ var parseCode = function(code, filename, where) {
         } // EO not in comment text
 
 
-        if (ch == '"' && !inCommentTextSingle) {
+        if (isNext('"') && !inCommentTextSingle) {
           inCommentTextDouble = !inCommentTextDouble;
         }
-        if (ch == "'" && !inCommentTextDouble) {
+        if (isNext("'") && !inCommentTextDouble) {
           inCommentTextSingle = !inCommentTextSingle;
         }
       } else {
-        if (ch == '"' && !inTextSingle) {
+        if (isNext('"') && !inTextSingle) {
           i++;
           inTextDouble = !inTextDouble;
         }
-        if (ch == "'" && !inTextDouble) {
+        if (isNext("'") && !inTextDouble) {
           i++;
           inTextSingle = !inTextSingle;
         }
@@ -224,9 +263,9 @@ var parseCode = function(code, filename, where) {
       }
 
       if (currentIsToken) {
-        var inCommentBracket = 0;
-        var inCommentHandlebar = 0;
-        var inCommentParantes = 0;
+        inCommentBracket = 0;
+        inCommentHandlebar = 0;
+        inCommentParantes = 0;
       }
 
     } // EO not new line
@@ -244,10 +283,9 @@ var parseCode = function(code, filename, where) {
 
 
 var parse = function(filename, where) {
-  console.log('Parse file: ' + filename);
   if (fs.existsSync(filename)) {
     var code = fs.readFileSync(filename, 'utf8');
-    var elements = new parseCode(code, where);
+    var elements = new parseSource(code, where);
     return {
       filename: filename,
       where: where,
@@ -260,6 +298,4 @@ var parse = function(filename, where) {
 
 };
 
-module.exports = {
-  parse: parse
-};
+module.exports = parse;
