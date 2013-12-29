@@ -24,6 +24,8 @@ var currentPath = path.resolve();
 var scriptPath = path.dirname(require.main.filename);
 // Templates folder
 var templatePath = path.join(scriptPath, path.sep, 'templates');
+// Custom Meteor Doc parser
+var mjsdoc = require('./meteor-js-doc.js');
 
 program
   .version('0.0.3')
@@ -93,7 +95,7 @@ var getBranch = function(done) {
           ghBranchExists = true;
         }
       }
-      done(branch, ghBranchExists);
+      // done(branch, ghBranchExists); // TODO: playing this is disabled
     }
   });
 }
@@ -264,4 +266,6 @@ getBranch(function(branch, ghBranchExists) {
   }
 
 });
+
+mjsdoc.parse('.', 'api.json');
 
