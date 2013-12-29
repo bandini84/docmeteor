@@ -9,7 +9,8 @@ var scriptPath = path.dirname(require.main.filename);
 
 var packageFolder = fs.existsSync('package.js');
 
-var parseFile = require('./parse-documentation.js');
+var parseSource = require('./parseSource.js');
+// TODO: make markdown files for api - internal/exported...
 
 var packageJS = {};
 
@@ -87,7 +88,7 @@ if (packageFolder) {
     for (var filename in packageObject.files) {
       var where = packageObject.files[filename];
       if (packageObject.files.hasOwnProperty(filename)) {
-        documentElements.push(parseFile(filename, where));
+        documentElements.push(parseSource(filename, where));
       }
     }
     console.log('DOCUMENT ELEMENTS:___________');
@@ -98,8 +99,8 @@ if (packageFolder) {
   }
 
 } else {
-  // Load js files into source files - should we do a recursive search excluding .* folders and files?
-  // TODO: Add source files etc. for apps...
+  // Load all js files into parseSource - should we do a recursive search excluding .* folders and files?
+  // TODO: Add source files etc. for apps... At the moment we require package.js
 }
 
 module.exports = {
