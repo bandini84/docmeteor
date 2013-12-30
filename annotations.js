@@ -125,7 +125,7 @@ var annotator = function(filename, where) {
       }
 
       // Set method or property with name..
-      if (!ast['@method'] && !ast['@property']) {
+      if (!ast['@method'] && !ast['@property'] && !ast['@callback']) {
         if (ast['@type'].name == 'function') {
           ast['@method'] = { name: methodName || name };
         } else {
@@ -146,7 +146,7 @@ var annotator = function(filename, where) {
       if (whereClient && whereServer) ast['@where'] = 'Anywhere';
 
       // Set the namespace
-      if (!ast['@namespace']) ast['@namespace'] = { name: (ast['@callback'] || ast['@method'] || '').name.split('.')[0] };
+      if (!ast['@namespace']) ast['@namespace'] = { name: (ast['@property'] || ast['@callback'] || ast['@method'] || '').name.split('.')[0] };
 
       ast['@methodName'] = name;
 

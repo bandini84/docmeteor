@@ -89,7 +89,8 @@ var parseSource = function(code, filename, where) {
   var inCommentHandlebar = 0;
   // > 0 if we are inside () in a comment
   var inCommentParantes = 0;
-
+  // in comment md code
+  var inCommentCodeTag = false;
   // current word is used for parsing annotations
   var currentWord = '';
   // i is the char index - we only run through the code once...
@@ -359,6 +360,10 @@ var parseSource = function(code, filename, where) {
         }
       }
 
+      if (isNext('```') && inComment) {
+        inCommentCodeTag = !inCommentCodeTag;
+      }
+
       if (isNext('/*') && !inTextSingle && !inTextDouble && !inInlineComment) {
         i ++;
         inComment = true;
@@ -369,9 +374,10 @@ var parseSource = function(code, filename, where) {
         i ++;
         inComment = false;
         currentIsToken = true;
+        inCommentCodeTag = false;
       }
 
-      if (isNext('//') && !inTextSingle && !inTextDouble && !inCommentBracket && !inCommentHandlebar && !inCommentParantes) {
+      if (isNext('//') && !inTextSingle && !inTextDouble && !inCommentBracket && !inCommentHandlebar && !inCommentParantes && !inCommentCodeTag) {
         i ++;
         currentIsToken = true;
         inInlineComment = true;

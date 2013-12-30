@@ -19,10 +19,11 @@ module.exports = function(filename, documentElements, packageObject) {
     var body = '';
 
     // Title can be a method or variable?
-    headline += '##'
+    headline += '\n##'; // '\n---\n###';
     if (ast['@constructor']) headline += 'new ';
     headline += ast['@property'] && ast['@property'].name || '';
     headline += ast['@method'] && ast['@method'].name || '';
+    headline += ast['@callback'] && ast['@callback'].name || '';
     if (ast['@method']) {
       headline += '(';
       if (ast['@param']) {
@@ -38,7 +39,7 @@ module.exports = function(filename, documentElements, packageObject) {
     headline += '    *' + ast['@where'] + '*\n';
 
     if (ast['@param']) {
-      body += '__Arguments__\n\n';
+      body += '\n__Arguments__\n\n';
 
       for (var i = 0; i < ast['@param'].length; i++) {
         
@@ -46,6 +47,13 @@ module.exports = function(filename, documentElements, packageObject) {
 
         body += '* ';
         body += '__' + ast['@param'][i].name + '__';
+        if (ast['@param'][i]['default']) {
+          body += '  (Optional'
+          if (ast['@param'][i]['default']) body += ' = ' + ast['@param'][i]['default'];
+          body += ')';
+        } else if (ast['@param'][i].optional) { 
+          body += '  (Optional)';
+        }  
         body += '  ';
         body += '*' + (ast['@param'][i].type || '{any}') + '*\n';
         if (ast['@param'][i].comment) body += ast['@param'][i].comment + '\n';
@@ -55,6 +63,13 @@ module.exports = function(filename, documentElements, packageObject) {
           for (var c = 0; c < children.length; c++) {
             body += '  * ';
             body += '__' + children[c].name + '__';
+            if (children[c]['default']) {
+              body += '  (Default'
+              if (children[c]['default']) body += ' = ' + children[c]['default'];
+              body += ')';
+            } else if (children[c].optional) {
+              body += '  (Optional)';
+            }  
             body += '  ';
             body += '*' + (children[c].type || '{any}') + '*\n';
             if (children[c].comment) body += children[c].comment + '\n';
@@ -73,11 +88,12 @@ module.exports = function(filename, documentElements, packageObject) {
       body += '*' + (returns.type || '{any}') + '*';
       if (ast['@reactive']) body += '  *(is reactive)*';
       body += '\n';
-      if (returns.comment) body += returns.comment + '\n';
+      if (returns.comment) body += '\n' + returns.comment + '\n';
 
     }
 
-    if (body.length) body += '---\n';
+    //if (body.length) body += '\n---\n';
+    //if (body.length) body += '\n';
 
     return {
       headline: headline,
@@ -167,16 +183,17 @@ module.exports = function(filename, documentElements, packageObject) {
         var lines = statements['inline-comment'];
         // We skip single line inline comments
         if (lines.length > 1) {
+          if (textResult.length) textResult += '\n---\n';
           for (var l = 0; l < lines.length; l++) {
             var line = lines[l] || { text: '' };
             textResult += line.text + '\n';
           }
-          textResult += '---\n';
       
         }
       }
     }
     if (countExported > 0) {
+      if (fileText.length > 0) fileText += '\n\n---\n';
       fileText += textResult;
     }
 
