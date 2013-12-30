@@ -150,7 +150,7 @@ module.exports = function(filename, documentElements, packageObject) {
     var elements = fileElements.elements;
 
 
-    console.log('FILE: ' + currentFileIndex);
+    // console.log('FILE: ' + currentFileIndex);
     var countExported = 0;
     var textResult = '';
 
@@ -246,6 +246,6 @@ module.exports = function(filename, documentElements, packageObject) {
     }
 
   }
-
+  console.log('Creating "' + filename + '"');
   fs.writeFileSync(filename, fileText, 'utf8');
 };

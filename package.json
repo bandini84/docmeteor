@@ -1,8 +1,8 @@
 {
   "name": "docmeteor",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "preferGlobal": "true",
-  "description": "Simple jsdoc into submodule gh-pages into docs folder, auto documentation",
+  "description": "Simple java like annotations + literal documentation parser for Meteor.js packages",
   "keywords": [
     "jsdoc",
     "wrapper",

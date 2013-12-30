@@ -15,7 +15,18 @@ var parseElementsMD = require('./parseElementsMD.js');
 
 var packageJS = {};
 
+
+// If the package.js is found then load and use it to create internal and
+// exported markdown file api's
+//
+// If package.js is not found the we should scan the folder at fire the parser
+// up...
+// but for now we simply message the user that we need the package.js
+
+
+
 if (packageFolder) {
+  console.log('Package.js found, parsing...');
   // Prepare the package.js for node.js docmeteor...
   var prependJS = 'var exportObject = {}, Package = {describe: function(obj) {exportObject.describe = obj;},on_use: function(fn) {exportObject.on_use = fn;},on_test: function(fn) {exportObject.on_test = fn;}};\n';
   var appendJS = '\nmodule.exports = exportObject;';
@@ -81,7 +92,8 @@ if (packageFolder) {
 
   packageObject.describe = packageJS.describe;
 
-  console.log(packageObject);
+  // Uncomment if you want to see the package object
+  //console.log(packageObject);
 
   documentElements = [];
 
@@ -92,9 +104,13 @@ if (packageFolder) {
         documentElements.push(parseSource(filename, where));
       }
     }
-    console.log('DOCUMENT ELEMENTS:___________');
-    console.log(JSON.stringify(documentElements, null, ' '));
+    // Uncomment to see the document element tree
+    // console.log('DOCUMENT ELEMENTS:___________');
+    // console.log(JSON.stringify(documentElements, null, ' '));
+
+    // Create the exported api.md
     parseElementsMD('api.md', documentElements, packageObject);
+    // Create the internal api markdown
     parseElementsMD('internal.api.md', documentElements);
   } else {
     console.log('No files in package.js');
@@ -104,8 +120,7 @@ if (packageFolder) {
 } else {
   // Load all js files into parseSource - should we do a recursive search excluding .* folders and files?
   // TODO: Add source files etc. for apps... At the moment we require package.js
+  console.log('Sorry, I dont work outside Meteor.js package folders yet..');
 }
 
-module.exports = {
-  parse: function() {}
-};
+module.exports = {};

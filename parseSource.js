@@ -282,7 +282,7 @@ var parseSource = function(code, filename, where) {
         result[name] = currentAnnotationParams[index];
       }
       // Mount the result on the annotations object
-      console.log(currentAnnotation);
+      // console.log(currentAnnotation);
       currentAnnotations[currentAnnotation] = result;
     }
   };
