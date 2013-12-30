@@ -10,7 +10,7 @@ module.exports = function(filename, documentElements, packageObject) {
   // exported api...
 
   var sourceFileCount = documentElements.length;
-  var exported = packageObject.exports || {};
+  var exported = packageObject && packageObject.exports || {};
 
   var fileText = '';
 
@@ -168,7 +168,7 @@ module.exports = function(filename, documentElements, packageObject) {
         // We skip single line inline comments
         if (lines.length > 1) {
           for (var l = 0; l < lines.length; l++) {
-            var line = lines[l];
+            var line = lines[l] || { text: '' };
             textResult += line.text + '\n';
           }
           textResult += '---\n';

@@ -95,6 +95,7 @@ if (packageFolder) {
     console.log('DOCUMENT ELEMENTS:___________');
     console.log(JSON.stringify(documentElements, null, ' '));
     parseElementsMD('api.md', documentElements, packageObject);
+    parseElementsMD('internal.api.md', documentElements);
   } else {
     console.log('No files in package.js');
     process.exit();
