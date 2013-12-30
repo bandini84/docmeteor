@@ -2,42 +2,72 @@ Doc Meteor
 ===========
 
 This is a simple CLI for updating documentation using `jsdoc` and `gh-pages` as destination.
-This tool can be used for javascript in general but will be optimized code documentation for `Meteor.js` `apps` and `packages`.
+This tool is optimized code documentation for `Meteor.js` `packages` - *It looks for package.js*
 
-###Installation:
+##Installation:
 ```
 $ npm install docmeteor
 ```
-*Requires `nodejs`, `jsdoc` and `git`*
 
-###Usage:
-```
-$ docmeteor --help
-
-  Usage: docmeteor [options]
-
-  Options:
-
-    -h, --help               output usage information
-    -V, --version            output the version number
-    -c, --create             Add gh-pages as submodule folder "docs"
-    -u, --update             Init/update submodule folder "docs"
-    -m, --message <message>  Commit message, defaults to "auto updated documentation"
-    -e, --exclude            Dont include "README.md", default includes "README.md" if found
-```
-
-Update documentation:
-`docmeteor` should be run inside the git repo to document.
-This will update and commit the code documentation into `gh-pages`.
+##Usage:
 ```bash
 $ docmeteor
-# or..
-$ docmeteor -m 'Added foo documentation'
+```
+This creates two files:
+* `api.md` - The exported api
+* `internal.api.md` - All code documentation
+
+###Inline comments
+Two or more inline comments will be considered as documentation and will be added. Use it as literal in code markdown documentation style.
+```
+// #Headline
+// _This_ is a *document* test
 ```
 
-###Rig the folder
-1. Create the branch "gh-pages"
-2. Run `docmeteor --create` in the `master` branch to add `gh-pages` as a sub folder "docs" containing the documentation
+###Block comments
+Block comments can use annotations. `docmeteor` reads the `package.js` to find the exported scope.
+```
+/** This is just a simple method
+  * @method ExportedScope.foo
+  */
+```
+
+###Current annotations
+```js
+var types = {
+  // Basic descriptors
+  '@method': ['name', 'comment'],
+  '@property': ['name', 'comment'],
+  '@callback': ['name', 'comment'],
+  '@where': ['where', 'comment'], // {client|server}, {client}, {server}
+  
+  '@constructor': ['comment'], // Expect `new`
+  '@param': ['type', 'name', 'comment'], // Parametres
+  '@return': ['type', 'comment'],
+  '@reactive': ['comment'], // If a reactive method
+
+  // Could deprecate:
+  '@returns': ['type', 'comment'],
+  '@type': ['type', 'comment'], // Or retract to internal use
+  '@namespace': ['name', 'comment'],
+  '@this': ['name', 'comment'],
+  '@self': ['name', 'comment'],
+
+  // Could be better implemented or deprecated
+  '@see': ['comment'], // TODO: Not used
+  '@author': ['name'], // TODO: Not used
+  '@const': ['comment'], // TODO: Not used
+  '@private': ['comment'], // TODO: Not used
+  '@override': ['comment'], // TODO: Not used
+  '@deprecated': ['comment'], // TODO: Not used
+  '@throws': ['type', 'comment'], // TODO: Not used
+  '@copyright': ['copyrightText'], // TODO: Not used
+  '@extends': ['type', 'comment'], // TODO: Not used
+  '@exception': ['type', 'comment'], // TODO: Not used
+  '@version': ['version', 'comment'], // TODO: Not used
+};
+```
+*Not all are used it the current layout template, others migth deprecate - making this tool more lightweight*
 
 Contributions are welcome,
 
