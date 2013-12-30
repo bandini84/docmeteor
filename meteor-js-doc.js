@@ -11,6 +11,7 @@ var packageFolder = fs.existsSync('package.js');
 
 var parseSource = require('./parseSource.js');
 // TODO: make markdown files for api - internal/exported...
+var parseElementsMD = require('./parseElementsMD.js');
 
 var packageJS = {};
 
@@ -93,6 +94,7 @@ if (packageFolder) {
     }
     console.log('DOCUMENT ELEMENTS:___________');
     console.log(JSON.stringify(documentElements, null, ' '));
+    parseElementsMD('api.md', documentElements, packageObject);
   } else {
     console.log('No files in package.js');
     process.exit();
