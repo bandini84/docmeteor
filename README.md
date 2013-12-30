@@ -45,11 +45,12 @@ var types = {
   '@param': ['type', 'name', 'comment'], // Parametres
   '@return': ['type', 'comment'],
   '@reactive': ['comment'], // If a reactive method
+  '@deprecated': ['comment'], // TODO: Not used
+  '@type': ['type', 'comment'],
+  '@namespace': ['name', 'comment'],
 
   // Could deprecate:
   '@returns': ['type', 'comment'],
-  '@type': ['type', 'comment'], // Or retract to internal use
-  '@namespace': ['name', 'comment'],
   '@this': ['name', 'comment'],
   '@self': ['name', 'comment'],
 
@@ -59,7 +60,6 @@ var types = {
   '@const': ['comment'], // TODO: Not used
   '@private': ['comment'], // TODO: Not used
   '@override': ['comment'], // TODO: Not used
-  '@deprecated': ['comment'], // TODO: Not used
   '@throws': ['type', 'comment'], // TODO: Not used
   '@copyright': ['copyrightText'], // TODO: Not used
   '@extends': ['type', 'comment'], // TODO: Not used

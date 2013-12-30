@@ -16,7 +16,7 @@ var types = {
   '@property': ['name', 'comment'],
   '@override': ['comment'],
   '@const': ['comment'],
-  '@type': ['type', 'comment'],
+  '@type': ['name', 'comment'],
   '@extends': ['type', 'comment'],
   '@callback': ['name', 'comment'],
   '@reactive': ['comment'],
@@ -117,16 +117,16 @@ var annotator = function(filename, where) {
       
       // Set the type
       if (!ast['@type']) {
-        if (ast['@param'] || ast['@method']) {
-          ast['@type'] = { name: 'function' };
+        if (ast['@param'] || ast['@method'] || ast['@return'] || ast['@returns'] || ast['@constructor']) {
+          ast['@type'] = { name: '{function}' };
         } else {
-          ast['@type'] = { name: 'any' };
+          ast['@type'] = { name: '{any}' };
         }
       }
 
       // Set method or property with name..
       if (!ast['@method'] && !ast['@property'] && !ast['@callback']) {
-        if (ast['@type'].name == 'function') {
+        if (ast['@type'].name == '{function}') {
           ast['@method'] = { name: methodName || name };
         } else {
           ast['@property'] = { name: methodName || name };
@@ -146,7 +146,9 @@ var annotator = function(filename, where) {
       if (whereClient && whereServer) ast['@where'] = 'Anywhere';
 
       // Set the namespace
-      if (!ast['@namespace']) ast['@namespace'] = { name: (ast['@property'] || ast['@callback'] || ast['@method'] || '').name.split('.')[0] };
+      if (!ast['@namespace'] || ast['@constructor']) {
+        ast['@namespace'] = { name: (ast['@property'] || ast['@callback'] || ast['@method'] || '').name.split('.')[0] };
+      }
 
       ast['@methodName'] = name;
 

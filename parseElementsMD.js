@@ -56,16 +56,35 @@ module.exports = function(filename, documentElements, packageObject) {
       headline += ')';
     }
 
+    if (ast['@property']) {
+      headline += ' ' + ast['@type'].name;
+    }
+
     headline += nbsp(2) + '<sub><i>' + ast['@where'] + '</i></sub>';
 
     headline += ' ' + level1 + '\n';
+      
+    var typeName = (ast['@method']?'method':(ast['@callback'])?'callback':'property');
+
+    if (ast['@deprecated']) {
+      body += '> __Warning!__\n';
+      body += '> This ' + typeName + ' "' + name + '" has deprecated from the api\n';
+      // add note from dev
+      if (ast['@deprecated'] !== true && ast['@deprecated'].length) {
+        body += '> ' + ast['@deprecated'] + '\n';
+      }
+    }
+
+    if (ast['@private']) {
+      body += '*This ' + typeName + ' is private*\n';
+    }
 
     if (ast['@param']) {
       body += '\n<u><b>Arguments</b></u>\n\n';
 
       for (var i = 0; i < ast['@param'].length; i++) {
         
-        paramList.push(ast['@param'][i].name);
+        // paramList.push(ast['@param'][i].name);
 
         body += '* ';
         body += '__' + ast['@param'][i].name + '__';

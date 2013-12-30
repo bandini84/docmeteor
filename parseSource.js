@@ -241,8 +241,8 @@ var parseSource = function(code, filename, where) {
   var parseAnnotations = function(c) {
     // We are on the last item
     var lastItem = (commands[currentAnnotation] && currentAnnotationParams.length == commands[currentAnnotation].length);
-    // If next is newline we have to fake a whitespace
-    if (code[i+1] == '\n') {
+    // If next is newline or end of block-comment we have to fake a whitespace
+    if (code[i+1] == '\n' || (code[i+1] == '*' && code[i+2] == '/')) {
       currentWord += c;
       c = '';
     }
