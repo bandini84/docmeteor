@@ -45,7 +45,7 @@ module.exports = function(filename, documentElements, packageObject) {
         var paramList = [];
         for (var i = 0; i < ast['@param'].length; i++) {
           if (ast['@param'][i].optional || ast['@param'][i].default) {
-            var def = (ast['@param'][i].default) ? '=' + ast['@param'][i].default : '';
+            var def = ''; // (ast['@param'][i].default) ? '=' + ast['@param'][i].default : '';
             paramList.push('[' + ast['@param'][i].name + def + ']');
           } else {
             paramList.push(ast['@param'][i].name);
@@ -80,7 +80,7 @@ module.exports = function(filename, documentElements, packageObject) {
     }
 
     if (ast['@param']) {
-      body += '\n<u><b>Arguments</b></u>\n\n';
+      body += '\n__Arguments__\n\n';
 
       for (var i = 0; i < ast['@param'].length; i++) {
         
@@ -89,20 +89,20 @@ module.exports = function(filename, documentElements, packageObject) {
         body += '* ';
         body += '__' + ast['@param'][i].name + '__';
 
-        body += ' *' + (ast['@param'][i].type || '{any}') + '*\n';
+        body += ' *' + (ast['@param'][i].type || '{any}') + '*';
         body += '  ';
 
-        // if (ast['@param'][i]['default']) {
-        //   body += '  (Optional'
-        //   if (ast['@param'][i]['default']) body += ' = ' + ast['@param'][i]['default'];
-        //   body += ')';
-        // } else if (ast['@param'][i].optional) { 
-        //   body += '  (Optional)';
-        // }  
+        if (ast['@param'][i]['default']) {
+          body += '  (Optional'
+          if (ast['@param'][i]['default']) body += ' = ' + ast['@param'][i]['default'];
+          body += ')';
+        } else if (ast['@param'][i].optional) { 
+          body += '  (Optional)';
+        }  
         
         //body += '\n';
 
-        if (ast['@param'][i].comment) body += ast['@param'][i].comment + '\n';
+        if (ast['@param'][i].comment) body += '\n' + ast['@param'][i].comment + '\n';
 
         if (ast['@param'][i].children) {
           var children = ast['@param'][i].children;
@@ -136,7 +136,7 @@ module.exports = function(filename, documentElements, packageObject) {
       body += '__Returns__';
       body += '  ';
       body += '*' + (returns.type || '{any}') + '*';
-      if (ast['@reactive']) body += '  <u>is reactive</u>';
+      if (ast['@reactive']) body += '  __(is reactive)__';
       body += '\n';
       if (returns.comment) body += returns.comment + '\n';
 
@@ -179,8 +179,16 @@ module.exports = function(filename, documentElements, packageObject) {
       var statements = elements[currentElementIndex];
       if (statements['block-comment']) {
         anno.reset();
+        var getNextCodeElement = function() {
+          var i = currentElementIndex+1;
+          while (i < elements.length && !elements[i]['code']) {
+            i++;
+          }
+          return elements[i];
+        };
+
         var getCodeReference = function() {
-          var next = elements[currentElementIndex+1];
+          var next = getNextCodeElement(); // elements[currentElementIndex+1];
           if (next && next['code']) {
             var nextLines = next['code'];
             if (nextLines.length) {
@@ -226,12 +234,21 @@ module.exports = function(filename, documentElements, packageObject) {
         }
 
         var ref = getCodeReference();
-        anno.addName(ref.name);
-        anno.addReference(ref.line, ref.text);
+        if (!ref) {
+          // This is a standalone comment...
+          //
+          // console.log('Filename: ' + sourceFilename);
+          // console.log(elements[currentElementIndex+1]);
+        } else {
+          anno.addName(ref.name);
+          anno.addReference(ref.line, ref.text);            
+        }
 
         var ast = anno.getAST();
         // If we have a package object we only show the exported api...
-        if (ast['@namespace'] && exported[ast['@namespace'].name] || !packageObject) {
+        var isExported = ast['@namespace'] && exported[ast['@namespace'].name];
+        var isPrivate = ast['@private'];
+        if ((isExported && !isPrivate)|| !packageObject) {
           var rendered = renderAST(ast, sourceFilename);
           var text = rendered.headline + before + rendered.body + after + rendered.reference;
 
@@ -261,6 +278,13 @@ module.exports = function(filename, documentElements, packageObject) {
     }
     if (countExported > 0) {
       if (fileText.length > 0) fileText += '\n\n---\n';
+      if (!packageObject) {
+        // fileText += '-\n';
+        fileText += '> File: ["' + sourceFilename + '"](' + sourceFilename + ')\n';
+        fileText += '> Where: ' + '{' + sourceWhere.join('|') + '}' + '\n';
+        fileText += '-\n';
+      }
+      
       fileText += textResult;
     }
 
