@@ -153,6 +153,16 @@ var annotator = function(filename, where) {
     }
   };
 
+  self.addReference = function(line, text) {
+    if (typeof line !== 'undefined' && text && text.length) {
+      var list = text.split('{');
+      ast['@reference'] = {
+        line: line,
+        text: list[0] + ((list.length > 1)?'{ ...':'')
+      };
+    }
+  };
+
   self.getAST = function() { 
     return ast;
   };
