@@ -302,6 +302,13 @@ var parseSource = function(code, filename, where) {
     if (isNext('\n')) { // Is newline
       if (inInlineComment) currentStatement++;
       inInlineComment = false;
+
+      // Reset text markers
+      inTextSingle = false;
+      inTextDouble = false;
+      inCommentTextSingle = false;
+      inCommentTextDouble = false;
+
       // Reset command
       // parseAnnotations();
       currentAnnotation = '';
