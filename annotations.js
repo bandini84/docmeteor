@@ -23,6 +23,7 @@ var types = {
   '@where': ['where', 'comment'],
   '@copyright': ['copyrightText'],
   '@namespace': ['name', 'comment'],
+  '@ejsontype': ['name', 'comment']
 };
 
 
@@ -71,10 +72,13 @@ var annotator = function(filename, where) {
           p[param[paramName]] = newObj;
         }
 
-        if (!p[paramName].children) p[paramName].children = [];
-
         param['name'] = param['name'].substr(a+1);
-        p[paramName].children.push(param);
+
+        if (p[paramName]) {
+          if (!p[paramName].children) p[paramName].children = [];
+          p[paramName].children.push(param);
+        }
+
 
       } else {
         ast[name].push(param);

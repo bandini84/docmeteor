@@ -48,6 +48,7 @@ var types = {
   '@deprecated': ['comment'], // TODO: Not used
   '@type': ['type', 'comment'],
   '@namespace': ['name', 'comment'],
+  '@ejsontype': ['name', 'comment']
 
   // Could deprecate:
   '@returns': ['type', 'comment'],

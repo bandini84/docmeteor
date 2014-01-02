@@ -79,6 +79,12 @@ module.exports = function(filename, documentElements, packageObject) {
       body += '*This ' + typeName + ' is private*\n';
     }
 
+    if (ast['@ejsontype']) {
+      body += 'Adds custom EJSON-type: `' + ast['@ejsontype'].name + '` ';
+      body += ast['@ejsontype'].comment || '';
+      body += '\n';
+    }
+
     if (ast['@param']) {
       body += '\n__Arguments__\n\n';
 
@@ -177,7 +183,7 @@ module.exports = function(filename, documentElements, packageObject) {
 
     for (var currentElementIndex = 0; currentElementIndex < elements.length; currentElementIndex++) {
       var statements = elements[currentElementIndex];
-      if (statements['block-comment']) {
+      if (statements['block-comment'] && statements['block-comment'].length > 1) {
         anno.reset();
         var getNextCodeElement = function() {
           var i = currentElementIndex+1;
@@ -282,7 +288,7 @@ module.exports = function(filename, documentElements, packageObject) {
         // fileText += '-\n';
         fileText += '> File: ["' + sourceFilename + '"](' + sourceFilename + ')\n';
         fileText += '> Where: ' + '{' + sourceWhere.join('|') + '}' + '\n';
-        fileText += '-\n';
+        fileText += '\n-\n';
       }
       
       fileText += textResult;
