@@ -44,14 +44,16 @@ var types = {
   '@constructor': ['comment'], // Expect `new`
   '@param': ['type', 'name', 'comment'], // Parametres
   '@return': ['type', 'comment'],
+  '@returns': ['type', 'comment'],
   '@reactive': ['comment'], // If a reactive method
-  '@deprecated': ['comment'], // TODO: Not used
+  '@deprecated': ['comment'], // Display a deprecation note
   '@type': ['type', 'comment'],
   '@namespace': ['name', 'comment'],
-  '@ejsontype': ['name', 'comment']
+  '@ejsontype': ['name', 'comment'],
+  '@todo': ['comment'] // Add tasks
+  '@private': ['comment'], // Keep in internal.api.md
 
   // Could deprecate:
-  '@returns': ['type', 'comment'],
   '@this': ['name', 'comment'],
   '@self': ['name', 'comment'],
 
@@ -59,7 +61,6 @@ var types = {
   '@see': ['comment'], // TODO: Not used
   '@author': ['name'], // TODO: Not used
   '@const': ['comment'], // TODO: Not used
-  '@private': ['comment'], // TODO: Not used
   '@override': ['comment'], // TODO: Not used
   '@throws': ['type', 'comment'], // TODO: Not used
   '@copyright': ['copyrightText'], // TODO: Not used

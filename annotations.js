@@ -23,9 +23,16 @@ var types = {
   '@where': ['where', 'comment'],
   '@copyright': ['copyrightText'],
   '@namespace': ['name', 'comment'],
-  '@ejsontype': ['name', 'comment']
+  '@ejsontype': ['name', 'comment'],
+  '@todo': ['comment'] // TODO: support multiple
 };
 
+
+var multiliners = {
+  /* '@param' */
+  '@todo': true
+};
+// @param is special...
 
 var annotator = function(filename, where) {
   var self = this;
@@ -84,6 +91,12 @@ var annotator = function(filename, where) {
         ast[name].push(param);
         p[param['name']] = param;
       }
+    } else if (multiliners[name]) { // Make these multilines
+      if (typeof ast[name] === 'undefined') {
+        ast[name] = [];
+      }
+
+      ast[name].push(obj);
     } else {
       if (types[name]) {
         if (types[name].length == 1) {
