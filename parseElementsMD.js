@@ -32,6 +32,7 @@ module.exports = function(filename, documentElements, packageObject) {
             ast['@method'] && ast['@method'].name ||
             ast['@property'] && ast['@property'].name || '';
 
+    var isPrototype = false;
     var scopes = name.split('.');
     var prettyName = '';
     var classNames = [];
@@ -43,11 +44,12 @@ module.exports = function(filename, documentElements, packageObject) {
           prettyName += scopes[p][0] + scopes[p].substr(1).toLowerCase();
         }
         classNames.push(scopes[p]);
+      } else {
+        isPrototype = true;
       }
     }
-    var isPrototype = (!!prettyName);
     protoName = scopes.pop();
-    prettyName = (isPrototype)? '*' + prettyName + '*.' + protoName : name;
+    prettyName = (prettyName)? '*' + prettyName + '*.' + protoName : name;
 
     (scopes.length > 1)? scopes[scopes.length-2] == 'prototype': false;
 
@@ -99,8 +101,9 @@ module.exports = function(filename, documentElements, packageObject) {
       body += '*This ' + typeName + ' is private*\n';
     }
 
-    if (ast['@prototype'] || isPrototype) {
-      body += '*This ' + typeName + ' __' + protoName + '__ is defined in `prototype` of `' + classNames.join('.') + '`*\n';
+    if (classNames.length > 0) {
+      var prototypeText = (ast['@prototype'] || isPrototype)? '`prototype` of ':'';
+      body += '*This ' + typeName + ' __' + protoName + '__ is defined in ' + prototypeText + '`' + classNames.join('.') + '`*\n';
     }
 
     if (ast['@ejsontype']) {
