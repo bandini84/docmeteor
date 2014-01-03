@@ -32,13 +32,32 @@ module.exports = function(filename, documentElements, packageObject) {
             ast['@method'] && ast['@method'].name ||
             ast['@property'] && ast['@property'].name || '';
 
+    var scopes = name.split('.');
+    var prettyName = '';
+    var classNames = [];
+    for (var p = 0; p < scopes.length-1; p++) {
+      if (scopes[p] !== 'prototype') {
+        if (p == 0) {
+          prettyName += scopes[p].toLowerCase();
+        } else {
+          prettyName += scopes[p][0] + scopes[p].substr(1).toLowerCase();
+        }
+        classNames.push(scopes[p]);
+      }
+    }
+    var isPrototype = (!!prettyName);
+    protoName = scopes.pop();
+    prettyName = (isPrototype)? '*' + prettyName + '*.' + protoName : name;
+
+    (scopes.length > 1)? scopes[scopes.length-2] == 'prototype': false;
+
     // Title can be a method or variable?
     headline += '\n' + level1 + ' '; // '\n---\n###';
 
     headline += '<a name="' + name + '"></a>';
 
     if (ast['@constructor']) headline += 'new ';
-    headline += name;
+    headline += prettyName;
     if (ast['@method']) {
       headline += '(';
       if (ast['@param']) {
@@ -72,12 +91,16 @@ module.exports = function(filename, documentElements, packageObject) {
       body += '> This ' + typeName + ' "' + name + '" has deprecated from the api\n';
       // add note from dev
       if (ast['@deprecated'] !== true && ast['@deprecated'].length) {
-        body += '> ' + ast['@deprecated'] + '\n';
+        body += '> ' + ast['@deprecated'] + '\n\n';
       }
     }
 
     if (ast['@private']) {
       body += '*This ' + typeName + ' is private*\n';
+    }
+
+    if (ast['@prototype'] || isPrototype) {
+      body += '*This ' + typeName + ' __' + protoName + '__ is defined in `prototype` of `' + classNames.join('.') + '`*\n';
     }
 
     if (ast['@ejsontype']) {
@@ -107,9 +130,9 @@ module.exports = function(filename, documentElements, packageObject) {
           body += '  (Optional)';
         }  
         
-        //body += '\n';
+        body += '\n';
 
-        if (ast['@param'][i].comment) body += '\n' + ast['@param'][i].comment + '\n';
+        if (ast['@param'][i].comment) body += ast['@param'][i].comment + '\n';
 
         if (ast['@param'][i].children) {
           var children = ast['@param'][i].children;
