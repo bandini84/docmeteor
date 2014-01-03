@@ -26,7 +26,7 @@ module.exports = function(filename, documentElements, packageObject) {
     var headline = '';
     var body = '';
     var reference = '';
-    var level1 = '##';
+    var level1 = '####';
 
     var name = ast['@callback'] && ast['@callback'].name ||
             ast['@method'] && ast['@method'].name ||
@@ -63,7 +63,8 @@ module.exports = function(filename, documentElements, packageObject) {
     headline += nbsp(2) + '<sub><i>' + ast['@where'] + '</i></sub>';
 
     headline += ' ' + level1 + '\n';
-      
+    
+    body += '-\n';
     var typeName = (ast['@method']?'method':(ast['@callback'])?'callback':'property');
 
     if (ast['@deprecated']) {
@@ -146,6 +147,17 @@ module.exports = function(filename, documentElements, packageObject) {
       body += '\n';
       if (returns.comment) body += returns.comment + '\n';
 
+    }
+
+    // If in the internal documentation show the todo list
+    var todo = ast['@todo'];
+    if (todo && !packageObject && todo.length > 0) {
+      body += '__TODO__\n';
+      body += '```\n';
+      for (var ti = 0; ti < todo.length; ti++) {
+        if (todo[ti].comment) body += '* ' + todo[ti].comment + '\n';
+      }
+      body += '```\n';
     }
 
     var ref = ast['@reference'];
@@ -256,7 +268,9 @@ module.exports = function(filename, documentElements, packageObject) {
         var isPrivate = ast['@private'];
         if ((isExported && !isPrivate)|| !packageObject) {
           var rendered = renderAST(ast, sourceFilename);
-          var text = rendered.headline + before + rendered.body + after + rendered.reference;
+          var text = rendered.headline;
+          text += (before)? '```\n' + before + '```\n' : '';
+          text += rendered.body + after + rendered.reference + '\n-\n';
 
           countExported++;
           textResult += text;
@@ -269,9 +283,9 @@ module.exports = function(filename, documentElements, packageObject) {
         // If a just a single method is exported all md inline is also returned
         // but none of the not exported symbol comments...
       }
-      if (statements['inline-comment']) {
-        var lines = statements['inline-comment'];
-        // We skip single line inline comments
+      if (statements['markdown-comment']) {
+        var lines = statements['markdown-comment'];
+        // We skip single line markdown comments
         if (lines.length > 1) {
           if (textResult.length) textResult += '\n-\n';
           for (var l = 0; l < lines.length; l++) {

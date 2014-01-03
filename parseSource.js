@@ -75,6 +75,8 @@ var parseSource = function(code, filename, where) {
   var inComment = false;
   // true if we are inside // - this could be in code or block comment
   var inInlineComment = false;
+  // mark if theres a whitespace before a inline comment
+  var markdownComment = false
   // true if we are inside "" in a code
   var inTextSingle = false;
   // true if we are inside '' in a code
@@ -213,8 +215,11 @@ var parseSource = function(code, filename, where) {
         addCharToType(c, 'block-comment', 'text');
       }
       // Pure inline-comment - we could have line comments in block comments
-      if (inInlineComment && !inComment) {
+      if (inInlineComment && !inComment && !markdownComment) {
         addCharToType(c, 'inline-comment', 'text');
+      }
+      if (inInlineComment && !inComment && markdownComment) {
+        addCharToType(c, 'markdown-comment', 'text');
       }
       // This is a inline comment inside a block comment, we add this as comment
       // inside the block comment element
@@ -300,9 +305,15 @@ var parseSource = function(code, filename, where) {
 
     // If we got a newline then reset inlinecomment and annotation
     if (isNext('\n')) { // Is newline
-      if (inInlineComment) currentStatement++;
+      if (inInlineComment) {
+        currentStatement++;
+        
+        inCommentBracket = 0;
+        inCommentHandlebar = 0;
+        inCommentParantes = 0;        
+      }
       inInlineComment = false;
-
+      markdownComment = false
       // Reset text markers
       inTextSingle = false;
       inTextDouble = false;
@@ -372,20 +383,21 @@ var parseSource = function(code, filename, where) {
       }
 
       if (isNext('/*') && !inTextSingle && !inTextDouble && !inInlineComment) {
-        i ++;
+        i++;
         inComment = true;
         currentIsToken = true;
       }
 
       if (isNext('*/') && !inTextSingle && !inTextDouble && !inInlineComment) {
-        i ++;
+        i++;
         inComment = false;
         currentIsToken = true;
         inCommentCodeTag = false;
       }
 
       if (isNext('//') && !inTextSingle && !inTextDouble && !inCommentBracket && !inCommentHandlebar && !inCommentParantes && !inCommentCodeTag) {
-        i ++;
+        if (!inInlineComment && !inComment) markdownComment = (code[i-1] == '\n' || i == 0);
+        i++;
         currentIsToken = true;
         inInlineComment = true;
       }
