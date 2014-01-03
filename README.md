@@ -18,16 +18,26 @@ This creates two files:
 * `internal.api.md` - All code documentation
 
 ###Inline comments
-Two or more inline comments will be considered as documentation and will be added. Use it as literal in code markdown documentation style.
+Inline comments are comments that only last one line.
+```js
+// Inline comment with no indent is a `Markdown` comment
+
+  // Inline comment with indent is a normal inline comment
+  // and will not be considered as documentation.
 ```
-// #Headline
+
+###Markdown comments
+A `Markdown comment` is an inline comment with no indent.
+Two or more markdown comments will be considered as documentation and will be added. Use it as literal "in code" markdown documentation style.
+```
+// #Headline markdown documentation
 // _This_ is a *document* test
 ```
 
 ###Block comments
 Block comments can use annotations. `docmeteor` reads the `package.js` to find the exported scope.
 ```
-/** This is just a simple method
+/** This is just a simple method // This is inline comment
   * @method ExportedScope.foo
   */
 ```
@@ -52,6 +62,7 @@ var types = {
   '@ejsontype': ['name', 'comment'],
   '@todo': ['comment'] // Add tasks
   '@private': ['comment'], // Keep in internal.api.md
+  '@prototype': ['comment'], // Mark as prototype
 
   // Could deprecate:
   '@this': ['name', 'comment'],

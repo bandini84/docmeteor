@@ -22,6 +22,45 @@ module.exports = function(filename, documentElements, packageObject) {
     return text;
   };
 
+  var knownTypes = {
+    'number': true,
+    'boolean': true,
+    'string': true,
+    'object': true,
+    'function': true,
+    'null': true,
+    'any': true,
+    'array': true,
+    'binary': true,
+    'arraybuffer': true,
+    'float32array': true,
+    'float64array': true,
+    'int32array': true,
+    'uint8array': true,
+    'buffer': true
+  };
+
+  var resolveTypeReference = function(ref) {
+    // TODO: Do a real lookup for other types of documentation
+    return '#' + ref;
+  };
+
+  var linkToType = function(t) {
+    var types = (t || '').replace('{', '').replace('}', '').split('|');
+    var output = [];
+    for (var ti = 0; ti < types.length; ti++) {
+      var oneType = types[ti].toLowerCase();
+      if (!knownTypes[oneType] && oneType[0] !== '[') { // not [To](link)
+        // We have to link to this object? but allow user to do linking
+        output.push('[' + types[ti] + '](' + resolveTypeReference(types[ti]) + ')'); 
+      } else {
+        // We return the original
+        output.push(types[ti]);
+      }
+    }
+    return '{' + output.join('|') + '}'
+  };
+
   var renderAST = function(ast, sourceFilename) {
     var headline = '';
     var body = '';
@@ -122,7 +161,7 @@ module.exports = function(filename, documentElements, packageObject) {
         body += '* ';
         body += '__' + ast['@param'][i].name + '__';
 
-        body += ' *' + (ast['@param'][i].type || '{any}') + '*';
+        body += ' *' + linkToType(ast['@param'][i].type || '{any}') + '*';
         body += '  ';
 
         if (ast['@param'][i]['default']) {
@@ -143,7 +182,7 @@ module.exports = function(filename, documentElements, packageObject) {
             body += '    - ';
             body += '__' + children[c].name + '__';
 
-            body += ' *' + (children[c].type || '{any}') + '*';
+            body += ' *' + linkToType(children[c].type || '{any}') + '*';
             body += '  ';
 
             if (children[c]['default']) {

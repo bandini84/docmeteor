@@ -24,7 +24,8 @@ var types = {
   '@copyright': ['copyrightText'],
   '@namespace': ['name', 'comment'],
   '@ejsontype': ['name', 'comment'],
-  '@todo': ['comment'] // TODO: support multiple
+  '@todo': ['comment'], // TODO: support multiple
+  '@prototype': ['comment'], // Mark as prototype
 };
 
 
