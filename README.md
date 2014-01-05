@@ -4,6 +4,12 @@ Doc Meteor
 This is a simple CLI for updating documentation.
 This tool is optimized code documentation for `Meteor.js` `packages` - *It looks for package.js*
 
+Examples of docmeteor in use:
+[Power-Queue api](https://github.com/CollectionFS/Meteor-powerqueue/blob/master/api.md)
+[Power-Queue internal api](https://github.com/CollectionFS/Meteor-powerqueue/blob/master/internal.api.md)
+[CollectionFS api](https://github.com/CollectionFS/Meteor-CollectionFS/blob/devel-merge/api.md)
+[CollectionFS internal api](https://github.com/CollectionFS/Meteor-CollectionFS/blob/devel-merge/internal.api.md)
+
 ##Installation:
 ```
 $ npm install docmeteor
