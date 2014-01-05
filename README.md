@@ -1,7 +1,7 @@
 Doc Meteor
 ===========
 
-This is a simple CLI for updating documentation using `jsdoc` and `gh-pages` as destination.
+This is a simple CLI for updating documentation.
 This tool is optimized code documentation for `Meteor.js` `packages` - *It looks for package.js*
 
 ##Installation:
