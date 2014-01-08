@@ -128,7 +128,7 @@ var parseSource = function(code, filename, where) {
   // Test for white space, marks if the whitespace should be trimmed
   var isWhiteSpace = function(pChar) {
     var c = pChar || code[i];
-    var inCapsule = inCommentBracket || inCommentHandlebar || inCommentParantes;
+    var inCapsule = inCommentBracket || inCommentHandlebar || inCommentParantes || inCommentCodeTag;
     return ((c == ' ' || c == '\t') && !inCommentTextSingle && !inCommentTextDouble && !inCapsule);
   };
 
