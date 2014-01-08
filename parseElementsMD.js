@@ -298,7 +298,8 @@ module.exports = function(filename, documentElements, packageObject) {
         for (var l = 0; l < lines.length; l++) {
           var line = lines[l];
           // Remove the * and posible whitespace
-          if (line.text[0] == '*') { line.text = line.text.substr(1)}
+          // if (line.text[0] == '*') { line.text = line.text.substr(1)}
+          line.text = line.text.substr(line.text.indexOf('*')+1);
           if (line.text[0] == ' ') { line.text = line.text.substr(1)}
           if (line.annotations) {
             doAfter = true;

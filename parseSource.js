@@ -128,7 +128,7 @@ var parseSource = function(code, filename, where) {
   // Test for white space, marks if the whitespace should be trimmed
   var isWhiteSpace = function(pChar) {
     var c = pChar || code[i];
-    var inCapsule = inCommentBracket || inCommentHandlebar || inCommentParantes || inCommentCodeTag;
+    var inCapsule = inCommentBracket || inCommentHandlebar || inCommentParantes; // || inCommentCodeTag; TODO: Detect if asterisk * is used
     return ((c == ' ' || c == '\t') && !inCommentTextSingle && !inCommentTextDouble && !inCapsule);
   };
 
@@ -313,7 +313,7 @@ var parseSource = function(code, filename, where) {
         inCommentParantes = 0;        
       }
       inInlineComment = false;
-      markdownComment = false
+      markdownComment = false;
       // Reset text markers
       inTextSingle = false;
       inTextDouble = false;
