@@ -109,6 +109,10 @@ var parseSource = function(code, filename, where) {
   var currentAnnotationParams = [];
   // object of annotations
   var currentAnnotations = {};
+  // Force into new object
+  var forceNewObject = false;
+  // Marker for last item
+  var lastStatement = '';
 
   // Test future string, often only one or two chars long
   var isNext = function(text) {
@@ -168,7 +172,8 @@ var parseSource = function(code, filename, where) {
           currentObject[type] = [];
         }
         // Check if type is the same if not then push and create a new
-        if (!currentObject[type]) {
+        if (!currentObject[type] || forceNewObject) {
+          forceNewObject = false;
           elements.push(currentObject);
           currentStatement = 0;
           currentObject = {};
@@ -380,19 +385,22 @@ var parseSource = function(code, filename, where) {
 
       if (isNext('```') && inComment) {
         inCommentCodeTag = !inCommentCodeTag;
+        if (!inCommentCodeTag) lastStatement = 'comment-code';
       }
 
-      if (isNext('/*') && !inTextSingle && !inTextDouble && !inInlineComment) {
+      if (isNext('/*') && !inTextSingle && !inTextDouble && !inInlineComment && !inComment) {
         i++;
         inComment = true;
         currentIsToken = true;
+        forceNewObject = lastStatement === 'block-comment';
       }
 
-      if (isNext('*/') && !inTextSingle && !inTextDouble && !inInlineComment) {
+      if (isNext('*/') && !inTextSingle && !inTextDouble && inComment) { // && !inInlineComment) {
         i++;
         inComment = false;
         currentIsToken = true;
         inCommentCodeTag = false;
+        lastStatement = 'block-comment';
       }
 
       if (isNext('//') && !inTextSingle && !inTextDouble && !inCommentBracket && !inCommentHandlebar && !inCommentParantes && !inCommentCodeTag) {
@@ -400,6 +408,7 @@ var parseSource = function(code, filename, where) {
         i++;
         currentIsToken = true;
         inInlineComment = true;
+        lastStatement = (inComment)?'block-comment':'inline-comment';
       }
 
       // Reset in comment stuff
