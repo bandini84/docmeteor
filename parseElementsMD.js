@@ -217,7 +217,7 @@ module.exports = function(filename, documentElements, packageObject) {
     // If in the internal documentation show the todo list
     var todo = ast['@todo'];
     if (todo && !packageObject && todo.length > 0) {
-      body += '__TODO__\n';
+      body += '\n__TODO__\n';
       body += '```\n';
       for (var ti = 0; ti < todo.length; ti++) {
         if (todo[ti].comment) body += '* ' + todo[ti].comment + '\n';
