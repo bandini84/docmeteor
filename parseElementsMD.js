@@ -314,6 +314,8 @@ module.exports = function(filename, documentElements, packageObject) {
             } else {
               before += line.text + '\n';
             }
+          } else {
+              after += '\n';
           }
         }
 
