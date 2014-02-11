@@ -69,6 +69,7 @@ var types = {
   '@todo': ['comment'] // Add tasks
   '@private': ['comment'], // Keep in internal.api.md
   '@prototype': ['comment'], // Mark as prototype
+  '@remote': ['comment'], // Mark as Meteor.Methods
 
   // Could deprecate:
   '@this': ['name', 'comment'],

@@ -88,7 +88,11 @@ module.exports = function(filename, documentElements, packageObject) {
       }
     }
     protoName = scopes.pop();
-    prettyName = (prettyName)? '*' + prettyName + '*.' + protoName : name;
+    if (ast['@remote']) {
+      prettyName = 'Meteor.method:' + prettyName;
+    } else {
+      prettyName = (prettyName)? '*' + prettyName + '*.' + protoName : name;
+    }
 
     (scopes.length > 1)? scopes[scopes.length-2] == 'prototype': false;
 
@@ -138,6 +142,10 @@ module.exports = function(filename, documentElements, packageObject) {
 
     if (ast['@private']) {
       body += '*This ' + typeName + ' is private*\n';
+    }
+    
+    if (ast['@remote']) {
+      body += '*This ' + typeName + ' is a remote method*\n';
     }
 
     if (classNames.length > 0) {
@@ -299,6 +307,7 @@ module.exports = function(filename, documentElements, packageObject) {
           var line = lines[l];
           // Remove the * and posible whitespace
           // if (line.text[0] == '*') { line.text = line.text.substr(1)}
+
           line.text = line.text.substr(line.text.indexOf('*')+1);
           if (line.text[0] == ' ') { line.text = line.text.substr(1)}
           if (line.annotations) {

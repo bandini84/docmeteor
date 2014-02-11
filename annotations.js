@@ -26,6 +26,7 @@ var types = {
   '@ejsontype': ['name', 'comment'],
   '@todo': ['comment'], // TODO: support multiple
   '@prototype': ['comment'], // Mark as prototype
+  '@remote': ['comment'], // Mark as Meteor.Methods
 };
 
 
