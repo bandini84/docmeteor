@@ -305,11 +305,21 @@ module.exports = function(filename, documentElements, packageObject) {
         var lines = statements['block-comment'];
         for (var l = 0; l < lines.length; l++) {
           var line = lines[l];
-          // Remove the * and posible whitespace
-          // if (line.text[0] == '*') { line.text = line.text.substr(1)}
+          var text = line.text;
 
-          line.text = line.text.substr(line.text.indexOf('*')+1);
-          if (line.text[0] == ' ') { line.text = line.text.substr(1)}
+          // Remove the * and posible whitespace
+          var asterisk = 0;
+
+          // Pass by the whitespaces
+          while (text[asterisk] === ' ')
+            asterisk++;
+
+          // If the first char we hit is asterisk then remove it and whitespace
+          if (text[asterisk] === '*') text = text.substr(asterisk+1);
+
+          // Remove the first whitespace
+          if (text[0] == ' ') { text = text.substr(1)}
+
           if (line.annotations) {
             doAfter = true;
             for (var a in line.annotations) {
@@ -317,11 +327,11 @@ module.exports = function(filename, documentElements, packageObject) {
                 anno.add(a, line.annotations[a]);
               }
             }
-          } else if (line.text.length) {
+          } else if (text.length) {
             if (doAfter) {
-              after += line.text + '\n';
+              after += text + '\n';
             } else {
-              before += line.text + '\n';
+              before += text + '\n';
             }
           } else {
               after += '\n';
