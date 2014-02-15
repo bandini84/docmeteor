@@ -12,7 +12,7 @@ Examples of docmeteor in use:
 
 ##Installation:
 ```
-$ npm install docmeteor
+$ npm install -g docmeteor
 ```
 
 ##Usage:
