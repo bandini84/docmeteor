@@ -91,7 +91,7 @@ module.exports = function(filename, documentElements, packageObject) {
     if (ast['@remote']) {
       prettyName = 'Meteor.method:' + prettyName;
     } else {
-      prettyName = (prettyName)? '*' + prettyName + '*.' + protoName : name;
+      prettyName = (prettyName && isPrototype)? '*' + prettyName + '*.' + protoName : name;
     }
 
     (scopes.length > 1)? scopes[scopes.length-2] == 'prototype': false;
