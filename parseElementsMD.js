@@ -182,7 +182,12 @@ module.exports = function(filename, documentElements, packageObject) {
         
         body += '\n';
 
-        if (ast['@param'][i].comment) body += ast['@param'][i].comment + '\n';
+        if (ast['@param'][i].comment) {
+          if (ast['@param'][i].comment.slice(0, 1) === '-') {
+            ast['@param'][i].comment = ast['@param'][i].comment.slice(1);
+          }
+          body += ast['@param'][i].comment + '\n';
+        }
 
         if (ast['@param'][i].children) {
           var children = ast['@param'][i].children;
@@ -194,14 +199,17 @@ module.exports = function(filename, documentElements, packageObject) {
             body += '  ';
 
             if (children[c]['default']) {
-              body += '  (Default'
-              if (children[c]['default']) body += ' = ' + children[c]['default'];
-              body += ')';
+              body += '  (Default = ' + children[c]['default'] + ')';
             } else if (children[c].optional) {
               body += '  (Optional)';
             }  
             body += '\n';
-            if (children[c].comment) body += children[c].comment + '\n';
+            if (children[c].comment) {
+              if (children[c].comment.slice(0, 1) === '-') {
+                children[c].comment = children[c].comment.slice(1);
+              }
+              body += children[c].comment + '\n';
+            }
           }
         }
 
