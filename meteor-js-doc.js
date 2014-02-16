@@ -30,7 +30,10 @@ if (packageFolder) {
   // Prepare the package.js for node.js docmeteor...
   var prependJS = 'var exportObject = { npmDepend: [] }, Npm = {depends: exportObject.npmDepend.push }; Package = {describe: function(obj) {exportObject.describe = obj;},on_use: function(fn) {exportObject.on_use = fn;},on_test: function(fn) {exportObject.on_test = fn;}};\n';
   var appendJS = '\nmodule.exports = exportObject;';
-  var destinationFilename = path.join(scriptPath, 'codepackage.js');
+
+  var homepath = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
+
+  var destinationFilename = path.join(homepath, '.codepackage.js');
   // Ok we are in a package folder, we try to load the package.js...
   var code = fs.readFileSync('package.js', 'utf8');
   // Load the code and append a simple export
