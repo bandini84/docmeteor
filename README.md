@@ -65,10 +65,11 @@ var types = {
   '@deprecated': ['comment'], // Display a deprecation note
   '@type': ['type', 'comment'],
   '@namespace': ['name', 'comment'],
-  '@ejsontype': ['name', 'comment'],
-  '@todo': ['comment'] // Add tasks
   '@private': ['comment'], // Keep in internal.api.md
+  '@public': ['comment'], // Add it to api.md
   '@prototype': ['comment'], // Mark as prototype
+  '@todo': ['comment'] // Add tasks only visible in internal.api.md
+  '@ejsontype': ['name', 'comment'],
   '@remote': ['comment'], // Mark as Meteor.Methods
 
   // Could deprecate:

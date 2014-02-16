@@ -5,6 +5,7 @@ var types = {
   '@exception': ['type', 'comment'],
   '@param': ['type', 'name', 'comment'],
   '@private': ['comment'],
+  '@public': ['comment'],
   '@return': ['type', 'comment'],
   '@returns': ['type', 'comment'],
   '@see': ['comment'],

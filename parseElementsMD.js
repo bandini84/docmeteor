@@ -351,8 +351,9 @@ module.exports = function(filename, documentElements, packageObject) {
 
         var ast = anno.getAST();
         // If we have a package object we only show the exported api...
-        var isExported = ast['@namespace'] && exported[ast['@namespace'].name];
+        var isExported = ast['@namespace'] && exported[ast['@namespace'].name] || ast['@public'];
         var isPrivate = ast['@private'];
+        
         if ((isExported && !isPrivate)|| !packageObject) {
           var rendered = renderAST(ast, sourceFilename);
           var text = rendered.headline;
