@@ -48,7 +48,7 @@ var annotator = function(filename, where) {
     p = {};
   };
 
-  self.add = function(name, obj) {
+  self.add = function(name, obj, lineNr) {
     if (name == '@param') {
       if (!ast[name]) {
         ast[name] = [];
@@ -68,6 +68,10 @@ var annotator = function(filename, where) {
         }
       } else {
         param['name'] = obj.name;
+      }
+      
+      if (typeof param['name'] === 'undefined') {
+        throw new Error('' + filename + ' line:' +lineNr + ', Error: @param: variable has no name');
       }
 
       var a = param['name'].indexOf('.');

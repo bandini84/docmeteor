@@ -332,7 +332,7 @@ module.exports = function(filename, documentElements, packageObject) {
             doAfter = true;
             for (var a in line.annotations) {
               if (line.annotations.hasOwnProperty(a)) {
-                anno.add(a, line.annotations[a]);
+                anno.add(a, line.annotations[a], line.line);
               }
             }
           } else if (text.length) {
